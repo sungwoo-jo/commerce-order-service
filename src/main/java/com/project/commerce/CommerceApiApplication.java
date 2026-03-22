@@ -1,4 +1,4 @@
-package commerce_api;
+package com.project.commerce;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
