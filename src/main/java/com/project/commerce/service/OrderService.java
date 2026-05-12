@@ -15,7 +15,9 @@ public class OrderService {
     }
 
     @Transactional
-    public void createOrder(Long userId, int totalPrice) {
+    public String createOrder(Long userId, int totalPrice) {
         Order order = new Order(userId, totalPrice);
+        orderRepository.save(order);
+        return order.getOrderNumber();
     }
 }

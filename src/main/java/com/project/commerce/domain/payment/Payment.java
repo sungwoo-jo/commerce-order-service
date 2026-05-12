@@ -1,5 +1,6 @@
 package com.project.commerce.domain.payment;
 
+import com.project.commerce.domain.order.Order;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,14 +13,16 @@ public class Payment {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long orderId;
+    @ManyToOne(fetch = FetchType.LAZY) // 객체 참조
+    @JoinColumn(name = "order_id") // FK
+    private Order order;
     private int amount;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
-    public Payment(Long orderId, int amount) {
-        this.orderId = orderId;
+    public Payment(Order order, int amount) {
+        this.order = order;
         this.amount = amount;
         this.status = PaymentStatus.READY;
     }

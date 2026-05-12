@@ -1,41 +1,54 @@
 package com.project.commerce.service;
 
 import com.project.commerce.domain.order.Order;
-import com.project.commerce.domain.order.OrderStatus;
 import com.project.commerce.repository.OrderRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class OrderServiceTest {
+@SpringBootTest
+@Transactional
+public class OrderServiceTest {
+
+    @Autowired
+    private OrderService orderService;
+
     @Autowired
     private OrderRepository orderRepository;
 
     @Test
-    @DisplayName("주문 저장 시 주문번호가 자동 생성되고 기본 상태는 READY여야 한다")
-    void saveOrderTest() {
-        // 1. 테스트할 데이터 준비
+    @DisplayName("성공: 올바른 정보로 주문을 생성하면 주문번호가 반환되어야 한다")
+    void createOrder_Success() {
+        // Given
         Long userId = 1L;
-        int totalPrice = 2100000000;
-        Order order = new Order(userId, totalPrice);
+        int totalPrice = 100000;
 
-        // 2. DB에 저장
-        Order savedOrder = orderRepository.save(order);
+        // When
+        String orderNumber = orderService.createOrder(userId, totalPrice);
 
-        // 3. 검증
-        assertThat(savedOrder.getId()).isNotNull();
-        assertThat(savedOrder.getOrderNumber()).isNotNull();
-        assertThat(savedOrder.getOrderNumber().startsWith("26"));
+        // Then
+        assertThat(orderNumber).isNotNull();
 
-        assertThat(savedOrder.getStatus()).isEqualTo(OrderStatus.READY);
+        Order savedOrder = orderRepository.findAll().get(0);
+        assertThat(savedOrder.getOrderNumber()).isEqualTo(orderNumber);
+        assertThat(savedOrder.getTotalPrice()).isEqualTo(totalPrice);
+    }
 
-        Order foundOrder = orderRepository.findById(savedOrder.getId()).orElseThrow();
-        assertThat(foundOrder.getUserId()).isEqualTo(userId);
+    @Test
+    @DisplayName("실패: 금액이 0원 이하이면 예외가 발생해야 한다")
+    void createOrder_fail_InvalidPrice() throws InterruptedException {
+        // Given
+        Long userId = 1L;
+        int invalidPrice = -100;
+
+        // When & Then
+        assertThatThrownBy(() -> orderService.createOrder(userId, invalidPrice))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("결제 금액이 정상적이지 않습니다.");
     }
 }

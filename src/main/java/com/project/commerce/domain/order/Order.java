@@ -45,6 +45,9 @@ public class Order {
         this.status = OrderStatus.PAID;
     }
 
+    /**
+     * 주문번호 생성
+     */
     private String generateOrderNumber() {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
 
