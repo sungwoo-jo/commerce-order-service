@@ -25,6 +25,9 @@ public class PaymentService {
 
         // 결제 이력 저장
         Payment payment = new Payment(order, amount);
+
+        // TODO: 2026-05-15 결제 데모를 위한 mockAPI 메서드 생성해서 호출하고, 결과에 따라 payment.success() 호출하기
+
         paymentRepository.save(payment);
     }
 }

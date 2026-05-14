@@ -1,6 +1,7 @@
 package com.project.commerce.service;
 
 import com.project.commerce.domain.order.Order;
+import com.project.commerce.dto.order.OrderResponseDTO;
 import com.project.commerce.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,5 +20,11 @@ public class OrderService {
         Order order = new Order(userId, totalPrice);
         orderRepository.save(order);
         return order.getOrderNumber();
+    }
+
+    public OrderResponseDTO getOrder(String orderNumber) {
+        return orderRepository.findByOrderNumber(orderNumber)
+                .map(OrderResponseDTO::new)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 주문번호입니다: " + orderNumber));
     }
 }
