@@ -34,4 +34,15 @@ public class Payment {
     public void fail() {
         this.status = PaymentStatus.FAIL;
     }
+
+    public void cancel() {
+        if (this.status == PaymentStatus.CANCELLED) {
+            throw new IllegalStateException("이미 취소 처리된 결제 건입니다.");
+        }
+        if (this.status == PaymentStatus.FAIL) {
+            throw new IllegalStateException("결제 실패 건은 취소할 수 없습니다.");
+        }
+
+        this.status = PaymentStatus.CANCELLED;
+    }
 }

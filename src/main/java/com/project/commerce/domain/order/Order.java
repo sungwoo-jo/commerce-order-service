@@ -45,6 +45,15 @@ public class Order {
         this.status = OrderStatus.PAID;
     }
 
+    public void cancel() {
+        // 이미 취소된 경우 처리
+        if (this.status == OrderStatus.CANCELLED) {
+            throw new IllegalStateException("이미 취소된 주문입니다.");
+        }
+
+        this.status = OrderStatus.CANCELLED;
+    }
+
     /**
      * 주문번호 생성
      */
