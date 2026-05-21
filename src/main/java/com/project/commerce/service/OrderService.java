@@ -1,8 +1,10 @@
 package com.project.commerce.service;
 
+import com.project.commerce.domain.item.Item;
 import com.project.commerce.domain.order.Order;
 import com.project.commerce.domain.order.OrderStatus;
 import com.project.commerce.dto.order.OrderResponseDTO;
+import com.project.commerce.repository.ItemRepository;
 import com.project.commerce.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,11 +16,18 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final PaymentService paymentService;
+    private final ItemRepository itemRepository;
 
     @Transactional
-    public String createOrder(Long userId, int totalPrice) {
-        Order order = new Order(userId, totalPrice);
+    public String createOrder(Long userId, Long itemId, int count) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
+
+        item.removeStock(count);
+
+        Order order = new Order(userId, item, count);
         orderRepository.save(order);
+
         return order.getOrderNumber();
     }
 
@@ -36,6 +45,9 @@ public class OrderService {
         if (order.getStatus() == OrderStatus.PAID) {
             paymentService.refund(order);
         }
+
+        Item item = order.getItem();
+        item.addStock(order.getCount());
 
         // 주문 상태 변경
         order.cancel();

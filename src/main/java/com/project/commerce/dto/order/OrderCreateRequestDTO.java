@@ -5,5 +5,6 @@ import lombok.Getter;
 @Getter
 public class OrderCreateRequestDTO {
     private Long userId; // 전달받은 사용자 id
-    private int totalPrice; // 전달받은 금액
+    private Long itemId; // 전달받은 상품 id
+    private int count;  // 전달받은 수량
 }

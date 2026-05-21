@@ -26,7 +26,11 @@ public class OrderController {
      */
     @PostMapping("/orders")
     public String createOrder(@RequestBody OrderCreateRequestDTO request) { // 사용자의 ID와 금액을 받아 주문을 생성하고 주문번호를 반환.
-        String orderNumber = orderService.createOrder(request.getUserId(), request.getTotalPrice());
+        String orderNumber = orderService.createOrder(
+                request.getUserId(),
+                request.getItemId(),
+                request.getCount()
+        );
         return orderNumber;
     }
 

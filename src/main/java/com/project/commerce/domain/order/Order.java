@@ -1,5 +1,6 @@
 package com.project.commerce.domain.order;
 
+import com.project.commerce.domain.item.Item;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,13 +27,20 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    public Order(Long userId, int totalPrice) {
-        validateUserId(userId);
-        validatePrice(totalPrice);
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    private Item item;
+    private int count;
+
+    public Order(Long userId, Item item, int count) {
         this.userId = userId;
-        this.totalPrice = totalPrice;
+        this.item = item;
+        this.count = count;
+        this.totalPrice = item.getPrice() * count;
         this.status = OrderStatus.READY;
         this.orderNumber = generateOrderNumber();
+        validateUserId(userId);
+        validatePrice(totalPrice);
     }
 
     private void validateUserId(Long userId) {
@@ -62,8 +70,8 @@ public class Order {
 
         int randomSuffix = ThreadLocalRandom.current().nextInt(100, 1000);
 
-        // 예시: 260324115321874
-        return timestamp + randomSuffix;
+        // 예시: ORD-260324115321874
+        return "ORD-" + timestamp + randomSuffix;
     }
 
     private void validatePrice(int totalPrice) {
