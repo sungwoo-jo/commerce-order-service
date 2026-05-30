@@ -45,7 +45,7 @@ public class Order {
 
     private void validateUserId(Long userId) {
         if (userId < 0) {
-            throw new NumberFormatException("정상적인 회원 번호가 아닙니다.");
+            throw new NumberFormatException("정상적인 회원 번호가 아닙니다. : " + userId);
         }
     }
 
