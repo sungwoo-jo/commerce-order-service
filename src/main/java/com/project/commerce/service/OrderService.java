@@ -20,7 +20,8 @@ public class OrderService {
 
     @Transactional
     public String createOrder(Long userId, Long itemId, int count) {
-        Item item = itemRepository.findById(itemId)
+//        Item item = itemRepository.findById(itemId)
+        Item item = itemRepository.findByIdWithPessimisticLock(itemId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
 
         item.removeStock(count);

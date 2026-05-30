@@ -1,5 +1,6 @@
 package com.project.commerce.repository;
 
+import com.project.commerce.domain.item.Item;
 import com.project.commerce.domain.order.Order;
 import com.project.commerce.domain.order.OrderStatus;
 import org.junit.jupiter.api.DisplayName;
@@ -21,7 +22,8 @@ class OrderRepositoryTest {
     @DisplayName("주문 저장 및 조회 테스트")
     void saveAndFindOrder() {
         // 1. 테스트할 데이터 준비
-        Order order = new Order(1L, 50000); // userId 1, 총 금액 5만원
+        Item item = new Item();
+        Order order = new Order(1L, item, 1); // userId 1, 총 금액 5만원
 
         // 2. DB에 저장
         Order savedOrder = orderRepository.save(order);
@@ -40,8 +42,9 @@ class OrderRepositoryTest {
     void saveOrderTest() {
         // 1. 테스트할 데이터 준비
         Long userId = 1L;
+        Item item = new Item();
         int totalPrice = 2100000000;
-        Order order = new Order(userId, totalPrice);
+        Order order = new Order(userId, item, 1);
 
         // 2. DB에 저장
         Order savedOrder = orderRepository.save(order);

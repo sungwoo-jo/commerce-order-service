@@ -68,10 +68,11 @@ public class Order {
     private String generateOrderNumber() {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyMMddHHmmss"));
 
-        int randomSuffix = ThreadLocalRandom.current().nextInt(100, 1000);
+        // 주문번호 생성 형식 변경 - UUID
+        String uuidSuffix = java.util.UUID.randomUUID().toString().substring(0, 5).toUpperCase();
 
-        // 예시: ORD-260324115321874
-        return "ORD-" + timestamp + randomSuffix;
+        // 예시: ORD-26053016101473CA9
+        return "ORD-" + timestamp + uuidSuffix;
     }
 
     private void validatePrice(int totalPrice) {

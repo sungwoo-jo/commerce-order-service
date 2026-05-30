@@ -1,5 +1,6 @@
 package com.project.commerce.service;
 
+import com.project.commerce.domain.item.Item;
 import com.project.commerce.domain.order.Order;
 import com.project.commerce.domain.order.OrderStatus;
 import com.project.commerce.domain.payment.Payment;
@@ -28,10 +29,11 @@ public class OrderServiceTest {
     void createOrder_Success() {
         // Given
         Long userId = 1L;
+        Long itemId = 1L;
         int totalPrice = 100000;
 
         // When
-        String orderNumber = orderService.createOrder(userId, totalPrice);
+        String orderNumber = orderService.createOrder(userId, itemId, totalPrice);
 
         // Then
         assertThat(orderNumber).isNotNull();
@@ -46,10 +48,11 @@ public class OrderServiceTest {
     void createOrder_fail_InvalidPrice() throws InterruptedException {
         // Given
         Long userId = 1L;
+        Long itemId = 1L;
         int invalidPrice = -100;
 
         // When & Then
-        assertThatThrownBy(() -> orderService.createOrder(userId, invalidPrice))
+        assertThatThrownBy(() -> orderService.createOrder(userId, itemId, invalidPrice))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("결제 금액이 정상적이지 않습니다.");
     }
@@ -58,7 +61,8 @@ public class OrderServiceTest {
     @DisplayName("결제 완료된 주문을 취소하면, 주문과 결제 상태가 모두 CANCELLED로 변경된다.")
     void cancelOrder_Success() {
         // 1. Given(준비): 결제 완료된 주문 상황을 강제로 만든다.
-        Order order = new Order(1L, 10000);
+        Item item = new Item();
+        Order order = new Order(1L, item, 1);
         order.pay();
         orderRepository.save(order);
 
@@ -81,7 +85,8 @@ public class OrderServiceTest {
     @DisplayName("이미 취소된 주문을 다시 취소하려고 하면 예외가 발생해야 한다.")
     void cancelOrder_ALreadyCanceled_ThrowsException() {
         // 1. Given(준비): 이미 취소된 주문을 만든다.
-        Order order = new Order(1L, 50000);
+        Item item = new Item();
+        Order order = new Order(1L, item, 1);
         order.cancel();
         orderRepository.save(order);
 
